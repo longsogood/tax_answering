@@ -124,28 +124,37 @@ ground_truth_answers = list(process_df.loc[:, "Câu trả lời sau rà soát"])
 # st.write(st.session_state.df.loc[st.session_state.selected_indices, :])
 process_btn = st.button("Send")
 if process_btn:
-    for question, ground_truth_answer in zip(questions, ground_truth_answers):
+    progress_percent = 0
+    progress_bar = st.progress(0.0, text="Processing...")
+
+    for index, question, ground_truth_answer in zip(st.session_state.selected_indices, questions, ground_truth_answers):
         # Meta Llama
         payload = {"question": question}
         temp = query(payload, LLAMA_API)
         while True:
             data = langfuse.fetch_traces(limit=1).data[0]
-            if current_id != data.id and data.output is not None:
+            if current_id != data.id and (data.output is not None and not isinstance(data.output, str)):
                 st.session_state.llama_answers.append(data.output["tax_llama"]["messages"][0]["kwargs"]["content"])
                 current_id = data.id
                 print("Checkpoint: Llama")
                 break
-        
+
+        progress_percent += 1/(len(questions) * 4)
+        progress_bar.progress(progress_percent, text=f"Processing... (Generated completion from Llama for question {index})")
+
         # Claude
         payload = {"question": question}
         temp = query(payload, CLAUDE_API)
         while True:
             data = langfuse.fetch_traces(limit=1).data[0]
-            if current_id != data.id and data.output is not None:
+            if current_id != data.id and (data.output is not None and not isinstance(data.output, str)):
                 st.session_state.claude_answers.append(data.output["tax_claude"]["messages"][0]["kwargs"]["content"])
                 current_id = data.id
                 print("Checkpoint: Claude")
                 break
+        
+        progress_percent += 1/(len(questions) * 4)
+        progress_bar.progress(progress_percent, text=f"Processing... (Generated completion from Claude for question {index})")
 
         # Comparison Llama
         compare_question = f"""
@@ -156,11 +165,14 @@ if process_btn:
         temp = query(payload, GRADER_API)
         while True:
             data = langfuse.fetch_traces(limit=1).data[0]
-            if current_id != data.id and data.output is not None:
+            if current_id != data.id and (data.output is not None and not isinstance(data.output, str)):
                 st.session_state.compare_llama.append(data.output["tax_grader"]["messages"][0]["kwargs"]["content"])
                 current_id = data.id
                 print("Checkpoint: Llama comparison")
                 break
+        
+        progress_percent += 1/(len(questions) * 4)
+        progress_bar.progress(progress_percent, text=f"Processing... (Generated completion from grader for question {index})")
 
         # Compare Claude
         compare_question = f"""
@@ -171,11 +183,14 @@ if process_btn:
         temp = query(payload, GRADER_API)
         while True:
             data = langfuse.fetch_traces(limit=1).data[0]
-            if current_id != data.id and data.output is not None:
+            if current_id != data.id and (data.output is not None and not isinstance(data.output, str)):
                 st.session_state.compare_claude.append(data.output["tax_grader"]["messages"][0]["kwargs"]["content"])
                 current_id = data.id
                 print("Checkpoint: Claude comparison")
                 break
+        
+        progress_percent += 1/(len(questions) * 4)
+        progress_bar.progress(progress_percent, text=f"Processing... (Generated completion from grader for question {index})")
     
     # pickle_file = {"Llama 3.3 70b": llama_answers,
     #                "Claude sonnet 3.5": claude_answers,
@@ -189,6 +204,7 @@ if process_btn:
                 compare_claude=st.session_state.compare_claude,
                 compare_llama=st.session_state.compare_llama)
 
+    progress_bar.empty()
     st.session_state.file_processed = True
 
 if st.session_state.file_processed:
