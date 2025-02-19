@@ -15,7 +15,37 @@ LANGFUSE_SECRET_KEY = secrets["LANGFUSE_SECRET_KEY"]
 langfuse = Langfuse(public_key=LANGFUSE_PUBLIC_KEY,
                     secret_key=LANGFUSE_SECRET_KEY,
                     host="https://us.cloud.langfuse.com")
+
 current_id  = langfuse.fetch_traces(limit=1).data[0].id
+
+def init():
+    if "df" not in st.session_state:
+        st.session_state.df = None
+
+    if "file_processed" not in st.session_state:
+        st.session_state.file_processed = False
+
+    if "processed_df" not in st.session_state:
+        st.session_state.processed_df = None
+
+    if "selectedSourceDoc" not in st.session_state:
+        st.session_state.selectedSourceDoc = None
+
+    if "claude_answers" not in st.session_state:
+        st.session_state.claude_answers = []
+
+    if "llama_answers" not in st.session_state:
+        st.session_state.llama_answers = []
+
+    if "compare_claude" not in st.session_state:
+        st.session_state.compare_claude = []
+
+    if "compare_llama" not in st.session_state:
+        st.session_state.compare_llama = []
+
+    if "claude_answers" not in st.session_state:
+        st.session_state.claude_answers = []
+
 def query(payload, prediction_url):
     # if st.selected_model == "Claude Sonnet 3.5":
     #     prediction_url = CLAUDE_API
@@ -23,10 +53,6 @@ def query(payload, prediction_url):
     #     prediction_url = LLAMA_API 
     response = requests.post(f"{prediction_url}", json=payload)
     return response
-
-def get_response():
-    langfuse.fetch_traces(limit=1)
-    
 
 def display_record(record):
     # Display the selected record's details
@@ -44,37 +70,39 @@ def display_record(record):
             st.subheader(f":green[Evaluation:]")
             st.markdown(record["note"])
 
-def filter_dataframe():
-    filter = st.checkbox("Filter")
-    st.session_state.filtered_df = st.session_state.df.copy()
-    
-    if not filter:
-        return st.session_state.filtered_df
-    
-    st.session_state.filtered_df = st.session_state.filtered_df[st.session_state.filtered_df["real_answer"].isna()]
-    return st.session_state.filtered_df
+def insert_to_df(df, claude_answers, llama_answers, compare_claude, compare_llama):
+    for i, index in enumerate(list(st.session_state.selected_indices)):
+        df.loc[index, "Llama 3.3 70b"] = llama_answers[i]
+        df.loc[index, "Claude sonnet 3.5"] = claude_answers[i]
+        df.loc[index, "Llama vs. groundtruth"] = compare_llama[i]
+        df.loc[index, "Claude vs. groundtruth"] = compare_claude[i]
+def add_to_df_callback():
+    insert_to_df(df=st.session_state.df,
+                claude_answers=st.session_state.claude_answers,
+                llama_answers=st.session_state.llama_answers,
+                compare_claude=st.session_state.compare_claude,
+                compare_llama=st.session_state.compare_llama)
+    st.session_state.df.to_excel("data/tax_answering.xlsx", index=False)
+    st.rerun()
+
+def reset_callback():
+    st.session_state.df = None
+    st.session_state.file_processed = False
+    st.session_state.processed_df = None
+    st.session_state.selectedSourceDoc = None
+    st.session_state.claude_answers = []
+    st.session_state.llama_answers = []
+    st.session_state.compare_claude = []
+    st.session_state.compare_llama = []
+    st.session_state.claude_answers = []
+    st.rerun()
 
 st.set_page_config(
     layout="wide", 
     initial_sidebar_state="expanded",
 )
 
-if "selected_model" not in st.session_state:
-    st.session_state.selected_model = None
-
-if "indices" not in st.session_state:
-    st.session_state.indices = None
-
-if "df" not in st.session_state:
-    st.session_state.df = None
-
-if "file_processed" not in st.session_state:
-    st.session_state.file_processed = False
-
-if "filtered_df" not in st.session_state:
-    st.session_state.filtered_df = None
-
-
+init()
 
 st.title("CMC Tax")
 st.write(f"Current id: {current_id}")
@@ -96,10 +124,6 @@ ground_truth_answers = list(process_df.loc[:, "Câu trả lời sau rà soát"])
 # st.write(st.session_state.df.loc[st.session_state.selected_indices, :])
 process_btn = st.button("Send")
 if process_btn:
-    llama_answers = []
-    claude_answers = []
-    compare_llama = []
-    compare_claude = []
     for question, ground_truth_answer in zip(questions, ground_truth_answers):
         # Meta Llama
         payload = {"question": question}
@@ -107,7 +131,7 @@ if process_btn:
         while True:
             data = langfuse.fetch_traces(limit=1).data[0]
             if current_id != data.id and data.output is not None:
-                llama_answers.append(data.output["tax_llama"]["messages"][0]["kwargs"]["content"])
+                st.session_state.llama_answers.append(data.output["tax_llama"]["messages"][0]["kwargs"]["content"])
                 current_id = data.id
                 print("Checkpoint: Llama")
                 break
@@ -118,7 +142,7 @@ if process_btn:
         while True:
             data = langfuse.fetch_traces(limit=1).data[0]
             if current_id != data.id and data.output is not None:
-                claude_answers.append(data.output["tax_claude"]["messages"][0]["kwargs"]["content"])
+                st.session_state.claude_answers.append(data.output["tax_claude"]["messages"][0]["kwargs"]["content"])
                 current_id = data.id
                 print("Checkpoint: Claude")
                 break
@@ -126,14 +150,14 @@ if process_btn:
         # Comparison Llama
         compare_question = f"""
         Ground-truth answer: {ground_truth_answer}\n
-        LLM answer: {llama_answers[-1]}
+        LLM answer: {st.session_state.llama_answers[-1]}
 """
         payload = {"question": compare_question}
         temp = query(payload, GRADER_API)
         while True:
             data = langfuse.fetch_traces(limit=1).data[0]
             if current_id != data.id and data.output is not None:
-                compare_llama.append(data.output["tax_grader"]["messages"][0]["kwargs"]["content"])
+                st.session_state.compare_llama.append(data.output["tax_grader"]["messages"][0]["kwargs"]["content"])
                 current_id = data.id
                 print("Checkpoint: Llama comparison")
                 break
@@ -141,30 +165,81 @@ if process_btn:
         # Compare Claude
         compare_question = f"""
         Ground-truth answer: {ground_truth_answer}\n
-        LLM answer: {claude_answers[-1]}
+        LLM answer: {st.session_state.claude_answers[-1]}
 """
         payload = {"question": compare_question}
         temp = query(payload, GRADER_API)
         while True:
             data = langfuse.fetch_traces(limit=1).data[0]
             if current_id != data.id and data.output is not None:
-                compare_claude.append(data.output["tax_grader"]["messages"][0]["kwargs"]["content"])
+                st.session_state.compare_claude.append(data.output["tax_grader"]["messages"][0]["kwargs"]["content"])
                 current_id = data.id
                 print("Checkpoint: Claude comparison")
                 break
     
-    pickle_file = {"Llama 3.3 70b": llama_answers,
-                   "Claude sonnet 3.5": claude_answers,
-                   "Llama vs. groundtruth": compare_llama,
-                   "Claude vs. groundtruth": compare_claude
-                   }
-    
-    with open('data/saved_dictionary.pkl', 'wb') as f:
-        pickle.dump(pickle_file, f)
-    
-    for i in enumerate(list(st.session_state.selected_indices)):
-        st.session_state.df.loc[i, "Llama 3.3 70b"] = llama_answers[i]
-        st.session_state.df.loc[i, "Claude sonnet 3.5"] = claude_answers[i]
-        st.session_state.df.loc[i, "Llama vs. groundtruth"] = compare_llama[i]
-        st.session_state.df.loc[i, "Claude vs. groundtruth"] = compare_claude[i]
-    st.write(st.session_state.df)
+    # pickle_file = {"Llama 3.3 70b": llama_answers,
+    #                "Claude sonnet 3.5": claude_answers,
+    #                "Llama vs. groundtruth": compare_llama,
+    #                "Claude vs. groundtruth": compare_claude
+    #                }
+    st.session_state.processed_df = process_df
+    insert_to_df(df=st.session_state.processed_df,
+                claude_answers=st.session_state.claude_answers,
+                llama_answers=st.session_state.llama_answers,
+                compare_claude=st.session_state.compare_claude,
+                compare_llama=st.session_state.compare_llama)
+
+    st.session_state.file_processed = True
+
+if st.session_state.file_processed:
+    st.dataframe(st.session_state.processed_df)
+
+    options = st.selectbox("Choose observation", options = list(st.session_state.processed_df.index))
+    st.session_state.selectedSourceDoc = st.session_state.processed_df.loc[options,:]
+    st.header(":green[Question]")
+    with st.expander("Question", expanded=True):
+        st.text(st.session_state.selectedSourceDoc["Câu hỏi"])
+    claudeTab, llamaTab = st.tabs(["Claude", "Llama"])
+    with claudeTab:
+        groundTruthCol1, claudeCol, claudeComparisonCol = st.columns(3)
+        with groundTruthCol1:
+                st.header(":green[Ground Truth]")
+                with st.container(height=500):
+                    with st.expander("Ground truth", expanded=True):
+                        st.text(st.session_state.selectedSourceDoc["Câu trả lời sau rà soát"])
+
+        with claudeCol:
+                st.header(":green[Claude answer]")
+                with st.container(height=500):
+                    with st.expander("Answer", expanded=True):
+                        st.text(st.session_state.selectedSourceDoc["Claude sonnet 3.5"])
+
+        with claudeComparisonCol:
+                st.header(":green[Claude vs. groundtruth]")
+                with st.container(height=500):
+                    with st.expander("Answer", expanded=True):
+                        st.text(st.session_state.selectedSourceDoc["Claude vs. groundtruth"])
+
+    with llamaTab:
+        groundTruthCol2, llamaCol, llamaComparisonCol = st.columns(3)
+        with groundTruthCol2:
+                st.header(":green[Ground Truth]")
+                with st.container(height=500):
+                    with st.expander("Ground truth", expanded=True):
+                        st.text(st.session_state.selectedSourceDoc["Câu trả lời sau rà soát"])
+        with llamaCol:
+                st.header(":green[Llama answer]")
+                with st.container(height=500):
+                    with st.expander("Answer", expanded=True):
+                        st.text(st.session_state.selectedSourceDoc["Llama 3.3 70b"])
+
+        with llamaComparisonCol:
+                st.header(":green[Llama vs. groundtruth]")
+                with st.container(height=500):
+                    with st.expander("Answer", expanded=True):
+                        st.text(st.session_state.selectedSourceDoc["Llama vs. groundtruth"])
+
+    add_to_df_btn = st.button("Add to dataframe", use_container_width=True, on_click=add_to_df_callback)
+    reset_btn = st.button("Reset", use_container_width=True, on_click=reset_callback)
+        
+
