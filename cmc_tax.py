@@ -106,7 +106,7 @@ init()
 
 st.title("CMC Tax")
 st.write(f"Current id: {current_id}")
-st.session_state.df = pd.read_excel("data/tax_answering.xlsx")
+st.session_state.df = pd.read_csv("data/tax_qa.csv")
 st_df = st.dataframe(st.session_state.df, on_select="rerun", selection_mode="multi-row", use_container_width=True)
 
 selected_rows = st_df.selection.rows
@@ -158,6 +158,7 @@ if process_btn:
 
         # Comparison Llama
         compare_question = f"""
+        Question: {question}
         Ground-truth answer: {ground_truth_answer}\n
         LLM answer: {st.session_state.llama_answers[-1]}
 """
@@ -176,6 +177,7 @@ if process_btn:
 
         # Compare Claude
         compare_question = f"""
+        Question: {question}
         Ground-truth answer: {ground_truth_answer}\n
         LLM answer: {st.session_state.claude_answers[-1]}
 """
@@ -203,59 +205,76 @@ if process_btn:
                 llama_answers=st.session_state.llama_answers,
                 compare_claude=st.session_state.compare_claude,
                 compare_llama=st.session_state.compare_llama)
+    
+    with open("llama_answers.pkl", 'wb') as f:
+        pickle.dump(st.session_state.llama_answers, f)
+        f.close()
+    
+    with open("claude_answers.pkl", "wb") as f:
+        pickle.dump(st.session_state.claude_answers, f)
+        f.close()
+
+    with open("compare_llama.pkl", "wb") as f:
+        pickle.dump(st.session_state.compare_llama, f)
+        f.close()
+    
+    with open("compare_claude.pkl", "wb") as f:
+        pickle.dump(st.session_state.compare_claude, f)
+        f.close()
 
     progress_bar.empty()
     st.session_state.file_processed = True
 
-if st.session_state.file_processed:
-    st.dataframe(st.session_state.processed_df)
+# if st.session_state.file_processed:
+#     st.dataframe(st.session_state.processed_df)
 
-    options = st.selectbox("Choose observation", options = list(st.session_state.processed_df.index))
-    st.session_state.selectedSourceDoc = st.session_state.processed_df.loc[options,:]
-    st.header(":green[Question]")
-    with st.expander("Question", expanded=True):
-        st.text(st.session_state.selectedSourceDoc["Câu hỏi"])
-    claudeTab, llamaTab = st.tabs(["Claude", "Llama"])
-    with claudeTab:
-        groundTruthCol1, claudeCol, claudeComparisonCol = st.columns(3)
-        with groundTruthCol1:
-                st.header(":green[Ground Truth]")
-                with st.container(height=500):
-                    with st.expander("Ground truth", expanded=True):
-                        st.text(st.session_state.selectedSourceDoc["Câu trả lời sau rà soát"])
+#     options = st.selectbox("Choose observation", options = list(st.session_state.processed_df.index))
+#     st.session_state.selectedSourceDoc = st.session_state.processed_df.loc[options,:]
+#     st.header(":green[Question]")
+#     with st.expander("Question", expanded=True):
+#         st.text(st.session_state.selectedSourceDoc["Câu hỏi"])
+#     claudeTab, llamaTab = st.tabs(["Claude", "Llama"])
+#     with claudeTab:
+#         groundTruthCol1, claudeCol, claudeComparisonCol = st.columns(3)
+#         with groundTruthCol1:
+#                 st.header(":green[Ground Truth]")
+#                 with st.container(height=500):
+#                     with st.expander("Ground truth", expanded=True):
+#                         st.text(st.session_state.selectedSourceDoc["Câu trả lời sau rà soát"])
 
-        with claudeCol:
-                st.header(":green[Claude answer]")
-                with st.container(height=500):
-                    with st.expander("Answer", expanded=True):
-                        st.text(st.session_state.selectedSourceDoc["Claude sonnet 3.5"])
+#         with claudeCol:
+#                 st.header(":green[Claude answer]")
+#                 with st.container(height=500):
+#                     with st.expander("Answer", expanded=True):
+#                         st.text(st.session_state.selectedSourceDoc["Claude sonnet 3.5"])
 
-        with claudeComparisonCol:
-                st.header(":green[Claude vs. groundtruth]")
-                with st.container(height=500):
-                    with st.expander("Answer", expanded=True):
-                        st.text(st.session_state.selectedSourceDoc["Claude vs. groundtruth"])
+#         with claudeComparisonCol:
+#                 st.header(":green[Claude vs. groundtruth]")
+#                 with st.container(height=500):
+#                     with st.expander("Answer", expanded=True):
+#                         st.text(st.session_state.selectedSourceDoc["Claude vs. groundtruth"])
 
-    with llamaTab:
-        groundTruthCol2, llamaCol, llamaComparisonCol = st.columns(3)
-        with groundTruthCol2:
-                st.header(":green[Ground Truth]")
-                with st.container(height=500):
-                    with st.expander("Ground truth", expanded=True):
-                        st.text(st.session_state.selectedSourceDoc["Câu trả lời sau rà soát"])
-        with llamaCol:
-                st.header(":green[Llama answer]")
-                with st.container(height=500):
-                    with st.expander("Answer", expanded=True):
-                        st.text(st.session_state.selectedSourceDoc["Llama 3.3 70b"])
+#     with llamaTab:
+#         groundTruthCol2, llamaCol, llamaComparisonCol = st.columns(3)
+#         with groundTruthCol2:
+#                 st.header(":green[Ground Truth]")
+#                 with st.container(height=500):
+#                     with st.expander("Ground truth", expanded=True):
+#                         st.text(st.session_state.selectedSourceDoc["Câu trả lời sau rà soát"])
+#         with llamaCol:
+#                 st.header(":green[Llama answer]")
+#                 with st.container(height=500):
+#                     with st.expander("Answer", expanded=True):
+#                         st.text(st.session_state.selectedSourceDoc["Llama 3.3 70b"])
 
-        with llamaComparisonCol:
-                st.header(":green[Llama vs. groundtruth]")
-                with st.container(height=500):
-                    with st.expander("Answer", expanded=True):
-                        st.text(st.session_state.selectedSourceDoc["Llama vs. groundtruth"])
+#         with llamaComparisonCol:
+#                 st.header(":green[Llama vs. groundtruth]")
+#                 with st.container(height=500):
+#                     with st.expander("Answer", expanded=True):
+#                         st.text(st.session_state.selectedSourceDoc["Llama vs. groundtruth"])
 
-    add_to_df_btn = st.button("Add to dataframe", use_container_width=True, on_click=add_to_df_callback)
-    reset_btn = st.button("Reset", use_container_width=True, on_click=reset_callback)
+
+#     add_to_df_btn = st.button("Add to dataframe", use_container_width=True, on_click=add_to_df_callback)
+#     reset_btn = st.button("Reset", use_container_width=True, on_click=reset_callback)
         
 
