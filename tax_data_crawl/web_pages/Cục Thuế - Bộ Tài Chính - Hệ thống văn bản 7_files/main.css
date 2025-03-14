@@ -1,0 +1,285 @@
+div#tpsWrapper {
+	
+}
+
+div#tpsWrapper h3 {
+	text-indent: 8px;
+	padding: 10px;
+	font-weight: bold;
+	font-size: 18px;
+	margin-bottom: 10px;
+	border: none;
+	color: red;
+}
+
+div.form-field {
+	padding:5px;
+	display:block;
+	clear:both;
+}
+div.form-field-date {
+	padding:5px;
+	display:block;
+	clear:both;
+}
+
+div.form-field label {
+	text-align: right;
+	width: 150px;
+	padding-right: 10px;
+	display: block;
+	float: left;
+	clear:both;
+}
+
+div.form-field input, div.form-field select {
+	border: 1px solid #ccc;
+	min-width: 345px;
+	outline: none;
+	line-height: 14px;
+	padding: 3px 3px;	
+	display:block;
+	float:left;
+}
+
+div.form-field-date label {
+	text-align: right;
+	width: 150px;
+	padding-right: 10px;
+	display: block;
+	float: left;
+	clear:both;
+}
+
+div.form-field-date input {
+	border: 1px solid #ccc;
+	width: 125px;
+	outline: none;
+	line-height: 14px;
+	padding: 3px 3px;	
+	display:block;
+	float:left;
+}
+div.form-field-date span {	
+	line-height: 18px;	
+}
+
+div.form-field span.validator {
+	color: red;
+	display: none;
+}
+.hctRed{
+	color:red;
+}
+
+div.button-row {
+	margin: 5px;
+	padding: 10px 0px 10px 165px;
+	clear:both;
+}
+
+div.button-row input {
+	padding: 3px;
+	font-weight: bold;
+}
+
+div#searchResults table {
+	width: 100%;
+	margin: 5px;
+	border-collapse: collapse;
+	border: 1px solid gray;
+	border-bottom: none;
+	border-right: none;
+}
+
+div#searchResults table tr {
+	border-bottom: 1px solid gray;
+}
+
+div#searchResults table tr td,div#searchResults table tr th {
+	border-right: 1px solid gray;
+	padding: 8px;
+}
+
+.money {	
+	text-align:right;
+}
+.mst {	
+	text-align:left;
+}
+
+div#searchResults table tr th {
+	/*background: #44bbff;*/
+}
+
+div#searchResults table tr.alt {
+	background: #f1f1f1;
+}
+
+div#searchResults table tr td.downloadRow a {
+	display: block;
+	position: relative;
+}
+
+div#searchResults table tr td.downloadRow div {
+	position: absolute;
+	right: 100%;
+	bottom: 100%;
+	background: white;
+	z-index: 10000;
+	display: none;
+	padding: 0;
+	margin: 0;
+}
+
+div#searchResults table tr td.downloadRow a:hover div {
+	display: block;
+	margin: 0;
+}
+
+div#searchResults table tr td.downloadRow div table {
+	border-collapse: collapse;
+	border: 1px solid gray;
+	margin: 0;
+}
+
+ul#tableNavigator {
+	list-style: none;
+	padding: 5px;
+	margin: 0px;
+	float:right;
+}
+
+ul#tableNavigator li {
+	display: block;
+	float:left;
+}
+
+ul#tableNavigator li a,ul#tableNavigator li span {
+	display: block;
+	padding: 3px;
+	border: 1px solid gray;
+	margin-left: 2px;
+}
+
+div.message-info {
+        display: block;
+        border: 1px solid #FF0000;
+        background: #FFDDDD; /*url("../images/error.png") no-repeat 6px 50%;*/
+        padding: 5px;
+        padding-left: 20px;
+        line-height: 20px;
+        text-indent: 0px;
+        color:#34404F;
+        font-weight: bold;
+        margin: 5px 0px;
+}
+
+.ta_border tr td {
+    border: 1px solid #969696;
+    padding: 10px;	
+}
+.ta_border tr th {
+    border: 1px solid #969696;
+    padding: 10px;
+	background-color:#F5F5F5;
+}
+.ta_border{
+	border-collapse: collapse;	
+}
+ul#tableNavigator {
+    float: right;
+    list-style: none outside none;
+    margin: 0;
+    padding: 5px;
+}
+ul#tableNavigator li {
+    display: block;
+    float: left;
+}
+ul#tableNavigator li a, ul#tableNavigator li span {
+    border: 1px solid #808080;
+    display: block;
+    margin-left: 2px;
+    padding: 3px;
+}
+ul#tableNavigator li a, ul#tableNavigator li span {
+    border: 1px solid #808080;
+    display: block;
+    margin-left: 2px;
+    padding: 3px;
+}
+.titleMsg{
+	color: rgb(29, 131, 180); 
+	font-weight: bold; 
+	text-transform: uppercase; 
+	font-size: 14px;
+}
+.spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px; /* half width of the spinner gif */
+    margin-top: -50px; /* half height of the spinner gif */
+    text-align:center;
+    z-index:1234;
+    overflow: auto;
+    width: 100px; /* width of the spinner gif */
+    height: 102px; /*hight of the spinner gif +2px to fix IE8 issue */
+}
+
+/*******   Overlay   *********/
+#overlay {
+	background-image:url(../img/transparent.png);
+	color:#000;	
+	height:450px;
+}
+.apple_overlay
+{
+	backround: #fff;
+	display:none;
+	font-size:11px;
+	padding:35px;
+	width:640px;
+}
+.contentWrap
+{
+	overflow: auto;
+	height: 480px;
+	padding:10px;
+}
+/* default close button positioned on upper right corner */
+.apple_overlay .close {
+	background-image:url(../img/close.png);
+	position:absolute; right:5px; top:5px;
+	cursor:pointer;
+	height:35px;
+	width:35px;
+}
+
+/*Simple overlay*/
+.simple_overlay {	
+	display:none;	
+	z-index:10000;	
+	background-color:#fff;	
+	width:900px;	
+	min-height:200px;
+	border:1px solid #666;	
+	-moz-box-shadow:0 0 90px 5px #000;
+	-webkit-box-shadow: 0 0 90px #000;	
+}
+.simple_overlay .close {
+	background-image:url(../img/close.png);
+	position:absolute;
+	right:-15px;
+	top:-15px;
+	cursor:pointer;
+	height:35px;
+	width:35px;
+}
+.simple_overlay ul li span{
+	color: #000;
+}
+.field_set{
+	border: 1px solid #c8c8c8;
+}

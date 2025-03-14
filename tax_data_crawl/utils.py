@@ -8,8 +8,8 @@ import numpy as np
 import bs4
 
 def get_content_url(url):
-    page = request.urlopen(url)
-    soup = BeautifulSoup(page, "html.parser", from_encoding="utf-8")
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, "html5lib", from_encoding="utf-8")
     return soup
 
 def get_content_panes(soup):

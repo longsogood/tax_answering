@@ -1,0 +1,149 @@
+/* Licensed Materials - Property of IBM.
+   (c) Copyright IBM Corporation 2001, 2009.  All Rights Reserved.
+   U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp. */
+/*This CSS was built on June 24 2009. (version: OneUI-2.0.0_20090624-0300)*/
+/* this file contains layout elements and style overrides for base components */
+/* these styles need to be applied after the component styles */
+/*companion file - layoutTheme.css*/
+/*******************************************/
+/*** P A G E   L A Y O U T   S T Y L E S ***/
+/*******************************************/
+body.lotusui {color:#222;background:none;background-color:#cee1fc}
+.lotusContent{background-color:#fff;}
+
+
+/* Licensed Materials - Property of IBM.
+   (c) Copyright IBM Corporation 2001, 2009.  All Rights Reserved.
+   U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp. */
+/*This CSS was built on June 24 2009. (version: OneUI-2.0.0_20090624-0300)*/
+/*these are the styles for the banner (layout)*/
+/*companion file is banner.css*/
+/*** B A N N E R **/
+/*this is the very top of the UI, that contains the logo, application links, user name, login/logout*/
+.lotusBanner ul.lotusInlinelist li{color:#000;background-color:transparent;border-color:#CCCCCC}
+.lotusBanner ul li.lotusFirst{background-image:none}
+.lotusBanner ul.lotusLinks a{color:#105cb6}
+.lotusBanner ul.lotusLinks li.lotusSelected{background-color:#649De1;}
+.lotusBanner ul.lotusLinks li.lotusSelected a{color:#fff}
+
+/***********************************************************/
+
+
+/* Licensed Materials - Property of IBM.
+   (c) Copyright IBM Corporation 2001, 2009.  All Rights Reserved.
+   U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp. */
+/*This CSS was built on June 24 2009. (version: OneUI-2.0.0_20090624-0300)*/
+/*these are the styles for the footer (layout)*/
+/*companion file is footer.css*/
+/*** F O O T E R ***/
+/*this sits at the bottom of the UI and contains a lot of support links, like help and about*/
+.lotusFooter th, .lotusFooterHeader{color:#666}
+.lotusFooter th, .lotusFooter td{border-color:#e0e0e0}
+/***********************************************************/
+
+
+
+
+/*** N A V I G A T I O N ***/
+/*left column - menu and filters*/
+.lotusColLeft .lotusInlinelist li{border-color:#8d8d8d;} 
+/***********************************************************/
+
+/* Licensed Materials - Property of IBM.
+   (c) Copyright IBM Corporation 2001, 2009.  All Rights Reserved.
+   U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp. */
+/*This CSS was built on June 24 2009. (version: OneUI-2.0.0_20090624-0300)*/
+/*these are the styles for the place bar (layout)*/
+/*companion file is placebar.css*/
+/*** P L A C E   B A R ***/
+/*this place bar shows up right below the title bar and tells user what place or community they are in*/
+.lotusPlaceBar{background-color:#e4e8ef;border-color:#c0c7cd;background-image:url(../../images/titleBkgd.png);}
+.lotusPlaceBar h2{color:#000;}
+
+/*[sprite]*/
+.lotusSpritesOn .lotusPlaceBar{background-image:url(../themeImages/lotusHorzBgSprite-8bit.png);background-position:0 -900px}
+/*[/sprite]*/
+
+/***********************************************************/
+
+
+
+/*** S I D E B A R ***/
+/*right column - lists*/
+.lotusColRight .lotusInlinelist li{border-color:#8d8d8d;} 
+/***********************************************************/
+
+/* Licensed Materials - Property of IBM.
+   (c) Copyright IBM Corporation 2001, 2009.  All Rights Reserved.
+   U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp. */
+/*This CSS was built on June 24 2009. (version: OneUI-2.0.0_20090624-0300)*/
+/*these are the styles for the title bar (layout)*/
+/*companion file is titlebar.css*/
+/*** T I T L E   B A R 	***/
+/*the blue bar under the banner, that contains tabs and search UI*/
+
+.lotusTitleBar h2{color:#fff;}
+
+
+.tundra .dojoDndHorizontal .lotusTabs .lotusSelected {
+   border-width:0px;
+}
+.tundra .dojoDndHorizontal .lotusTabs .lotusTab {
+   border:0px;
+}
+.dndHasHandles .lotusTabs li.modelHasChildren{
+	padding-right:0px;
+}
+
+.dndHasHandles .lotusTabs li {
+/*padding-left:0px;
+padding-right:0px;*/
+}
+
+/*accessibility*/
+.lotusTitleBar .lotusSearchButton{color:#fff}
+
+/*[sprite]*/
+.lotusSpritesOn .lotusTitleBar{background-image:url(../themeImages/lotusHorzBgSprite-8bit.png);background-position:0 -1800px}
+/*[/sprite]*/
+
+/***********************************************************/
+
+
+
+/*************************************/
+/*** S P E C I A L   S C R E E N S ***/
+/*************************************/
+
+/*** A B O U T ***/
+.lotusAbout .lotusMain{background-image:none}
+.lotusAbout .lotusContent h1{color:#4275aa}
+.lotusAbout .lotusContent h2{color:#4275aa}
+.lotusAbout .lotusContent h3{color:#4275aa}
+.lotusAboutBox{background-color:#e8f0fb}
+/***********************************************************/
+
+/*** E R R O R ***/
+.lotusErrorBox{background-color:#fff;border-color:#cfcfcf;}
+.lotusError h1{color:#274a71;}
+/***********************************************************/
+
+/*** H O M E ***/
+/*a.k.a. dashboard*/
+.lotusDashboard .lotusColRight h2{background-color:transparent;}
+/***********************************************************/
+
+/*** L O G I N ***/
+/*this can appear on a plain page (gradient background only), or launched in a separate window*/
+.lotusLoginBox{background-color:#fff;background-image:url(../themeImages/loginBkgd.png);border-color:#BBBBBB;}
+.lotusLogin h1, .lotusLogin h2{color:#274a71;}
+.lotusDescription h2{color:#000}
+.lotusLoginLogo{}/*definition for this has moved up to general classes - please use the lotusLogo class instead of lotusLoginLogo*/
+/***********************************************************/
+
+/*** W E L C O M E ***/
+.lotusWelcome .lotusBtnAction, .lotusWelcomeBox .lotusClose{border-color:#666666}
+.lotusWelcomeBox{background-color:#e8f0fb;border-color:#d1e0f7}
+.lotusWelcomeBox, .lotusWelcomeBox h2{color:#4275aa;}
+.lotusWelcomeBox .lotusBtnAction:hover, .lotusWelcomeBox .lotusBtnAction:focus, .lotusWelcomeBox .lotusClose:hover, .lotusWelcomeBox .lotusClose:focus{border-color:#333333}
+/***********************************************************/
